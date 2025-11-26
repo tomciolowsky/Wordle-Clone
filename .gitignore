@@ -1,0 +1,21 @@
+# Ignore C++ compiled files
+*.dll
+*.so
+*.dylib
+*.o
+*.obj
+*.exe
+
+# Ignore Java compiled files
+*.class
+*.jar
+*.war
+
+# Ignore IDE specific folders (if you use IntelliJ or VS Code)
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# Ignore the output folder
+bin/
