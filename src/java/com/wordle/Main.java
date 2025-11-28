@@ -1,8 +1,7 @@
 package com.wordle;
 
-import java.util.Arrays;
-
-import com.wordle.bridge.GameBridge;
+import javax.swing.SwingUtilities;
+import com.wordle.gui.MainWindow;
 
 public class Main {
     public static void main(String[] args) {
@@ -10,26 +9,12 @@ public class Main {
         System.out.println("      Starting Wordle Project     ");
         System.out.println("==================================");
 
-        // Create the bridge
-        GameBridge bridge = new GameBridge();
-
-        // FOR DEBUG
-        // Call the C++ function
-        // System.out.println("[Java] Calling C++ now...");
-        // bridge.testConnection();
-        
-        // 1.Start Game
-        bridge.startGame();
-
-        // 2.Test guess
-        String myGuess = "APPLE";
-        System.out.println("Guessing: " + myGuess);
-
-        int[] result = bridge.checkGuess(myGuess);
-
-        System.out.println("Result: " + Arrays.toString(result));
-        System.out.println("(2=Green, 1=Yellow, 0=Grey)");
-
-        // System.out.println("[Java] Back in main. Exiting.");
+        // Create MainWindow
+        SwingUtilities.invokeLater(new Runnable(){
+            @Override
+            public void run(){
+                new MainWindow();
+            }
+        });
     }
 }

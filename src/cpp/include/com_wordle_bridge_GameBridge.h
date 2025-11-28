@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     com_wordle_bridge_GameBridge
- * Method:    testConnection
- * Signature: ()V
+ * Method:    getStatistics
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT void JNICALL Java_com_wordle_bridge_GameBridge_testConnection
+JNIEXPORT jstring JNICALL Java_com_wordle_bridge_GameBridge_getStatistics
   (JNIEnv *, jobject);
 
 /*
@@ -25,10 +25,10 @@ JNIEXPORT void JNICALL Java_com_wordle_bridge_GameBridge_startGame
 
 /*
  * Class:     com_wordle_bridge_GameBridge
- * Method:    checkGuess
+ * Method:    processGuess
  * Signature: (Ljava/lang/String;)[I
  */
-JNIEXPORT jintArray JNICALL Java_com_wordle_bridge_GameBridge_checkGuess
+JNIEXPORT jintArray JNICALL Java_com_wordle_bridge_GameBridge_processGuess
   (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus

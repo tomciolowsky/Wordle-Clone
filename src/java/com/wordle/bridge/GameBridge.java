@@ -2,7 +2,8 @@ package com.wordle.bridge;
 
 public class GameBridge {
 
-    // 1. Load the "WordleLogic.dll" that we will build
+    // 1. Load the "WordleLogic.dll"
+    // This code serves as loadLibrary(), using "static initialisation block" 
     static {
         System.out.println("[Java] Attempting to load library...");
         try {
@@ -17,9 +18,8 @@ public class GameBridge {
     }
     
     // 2. Declare a native method (implemented in C++)
-    // We will call this to test the connection
-    public native void testConnection();
-
+    
+    public native String getStatistics();
     public native void startGame();
-    public native int[] checkGuess(String guess);
+    public native int[] processGuess(String guess);
 }

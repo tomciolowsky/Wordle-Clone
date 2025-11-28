@@ -19,3 +19,4 @@
 
 # Ignore the output folder
 bin/
+helper/
