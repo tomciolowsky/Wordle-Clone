@@ -59,6 +59,12 @@ public:
             file.close();
         }
     }
+
+    friend std::ostream& operator<<(std::ostream& os, const Statistics& stats) {
+        os << "Wins: " << stats.wonGames << ", Streak: " << stats.winStreak;
+        return os;
+    }
+
 };
 
 #endif

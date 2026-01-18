@@ -6,6 +6,12 @@
 #include "GuessValidator.h"
 #include "Statistics.h"
 
+enum class TileState {
+    GREY = 0,
+    YELLOW = 1,
+    GREEN = 2
+};
+
 class AbstractGame
 {
 protected:
@@ -26,6 +32,11 @@ protected:
         return true;
     }
 
+    template <typename T>
+    void logDebug(T message) {
+        std::cout << "[DEBUG]: " << message << std::endl;
+    }
+
 public:
 
     virtual ~AbstractGame(){}
@@ -42,7 +53,6 @@ public:
         return stats.getStatisticsString();
     }
 
-    // FOR DEBUG
     std::string getDebugTarget(){
         return currentTarget;
     }

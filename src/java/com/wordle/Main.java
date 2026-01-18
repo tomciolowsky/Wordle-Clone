@@ -1,7 +1,9 @@
 package com.wordle;
 
 import javax.swing.SwingUtilities;
+import com.wordle.gui.LanguageDialog;
 import com.wordle.gui.MainWindow;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -9,11 +11,20 @@ public class Main {
         System.out.println("      Starting Wordle Project     ");
         System.out.println("==================================");
 
-        // Create MainWindow
         SwingUtilities.invokeLater(new Runnable(){
             @Override
             public void run(){
-                new MainWindow();
+                LanguageDialog launcher = new LanguageDialog();
+                launcher.setVisible(true); 
+            
+                String dictPath = launcher.getSelectedDictionary();
+
+                if (dictPath == null) {
+                    System.out.println("No language selected. Exiting.");
+                    System.exit(0);
+                }
+                
+                new MainWindow(dictPath);
             }
         });
     }

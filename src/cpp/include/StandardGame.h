@@ -7,7 +7,6 @@
 
 class StandardGame : public AbstractGame{
 private:
-    bool hardModeActive; //TODO
     WordRepository repo;
 
 protected:
@@ -24,20 +23,21 @@ public:
             this->currentTarget = repo.getRandomWord();
             this->attemptsRemaining = 6;
             this->isGameOver = false;
+
+            this->logDebug("New Game Started. Word selected.");
         }
         else{
             this->currentTarget = "ERROR";
+            this->logDebug("Critical Error: Dictionary failed.");
         }
     }
 
-    // 0 = Grey, 1 = Yellow, 2 = Green
     std::vector<int> processGuess(std::string guess) override {
         
-        // VALIDATION CHECK
         if (!this->isValidGuess(guess)){
             return std::vector<int>(5, -1);
         }
-        // EXISTANCE CHECK
+        
         if (!repo.contains(guess)){
             return std::vector<int>(5, -2);
         }
@@ -48,7 +48,7 @@ public:
         // GREEN
         for (int i = 0; i < 5; i++){
             if (guess[i]==currentTarget[i]){
-                checkedGuess[i]=2;
+                checkedGuess[i]=static_cast<int>(TileState::GREEN);
                 tempTarget[i]='*';
                 guess[i]='#';
             }       
@@ -60,14 +60,14 @@ public:
             }
             auto found_position = tempTarget.find(guess[i]);    
             if (found_position != std::string::npos){
-                checkedGuess[i]=1;
+                checkedGuess[i]=static_cast<int>(TileState::YELLOW);
                 tempTarget[found_position]='*';
             }    
         }
 
         bool isWin = true;
         for (int x : checkedGuess){
-            if (x != 2){
+            if (x != static_cast<int>(TileState::GREEN)){
                 isWin=false;
             }
         }
@@ -85,11 +85,6 @@ public:
         
         return checkedGuess;
     }
-    // FOR DEBUG
-    std::string getDebugTarget(){
-        return currentTarget;
-    }
-
 };
 
 

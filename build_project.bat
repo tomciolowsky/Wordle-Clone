@@ -14,8 +14,26 @@ if "%JAVA_HOME%" == "" (
 :: 2. Create Output Directory
 if not exist "bin" mkdir bin
 
-:: 3. COMPILE C++ (The Logic)
-echo [1/2] Compiling C++ Logic...
+:: ============================================================
+:: STEP 3: COMPILE JAVA & GENERATE HEADER (Moved to First!)
+:: ============================================================
+echo [1/2] Compiling Java GUI and Generating Header...
+dir /s /B src\java\*.java > sources.txt
+
+:: -h flag generates the C++ header file in the include folder
+javac -d bin -h src/cpp/include -encoding UTF-8 @sources.txt
+del sources.txt
+
+if %errorlevel% neq 0 (
+    echo [ERROR] Java Compilation Failed!
+    pause
+    exit /b
+)
+
+:: ============================================================
+:: STEP 4: COMPILE C++ (The Logic)
+:: ============================================================
+echo [2/2] Compiling C++ Logic...
 g++ -shared -o bin/WordleLogic.dll ^
     src/cpp/impl/*.cpp ^
     -I"%JAVA_HOME%\include" ^
@@ -25,18 +43,6 @@ g++ -shared -o bin/WordleLogic.dll ^
 
 if %errorlevel% neq 0 (
     echo [ERROR] C++ Compilation Failed!
-    pause
-    exit /b
-)
-
-:: 4. COMPILE JAVA (The GUI)
-echo [2/2] Compiling Java GUI...
-dir /s /B src\java\*.java > sources.txt
-javac -d bin -h src/cpp/include @sources.txt
-del sources.txt
-
-if %errorlevel% neq 0 (
-    echo [ERROR] Java Compilation Failed!
     pause
     exit /b
 )

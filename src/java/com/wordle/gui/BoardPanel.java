@@ -3,7 +3,6 @@ package com.wordle.gui;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.Timer;
 
 public class BoardPanel extends GamePanel {
@@ -33,7 +32,6 @@ public class BoardPanel extends GamePanel {
     }
 
     public void animateRow(int row, char[] letters, int[] colors){
-        
         Timer revealTimer = new Timer(200, new ActionListener() {
             int curTile=0;
             @Override

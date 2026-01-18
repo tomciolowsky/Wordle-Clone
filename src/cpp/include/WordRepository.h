@@ -14,7 +14,7 @@ private:
 
 public:
     WordRepository() {
-        std::srand(std::time(0)); // Seed random number generator
+        std::srand(std::time(0));
     }
 
     bool contains(const std::string& guess){
@@ -29,8 +29,10 @@ public:
 
     bool loadWords(const std::string& filename) {
         std::ifstream file(filename);
-        if (!file.is_open()) return false;
-
+        if (!file.is_open()){
+            std::cerr << "[ERROR] Failed to load dictionary file: " << filename << std::endl;
+            return false;
+        } 
         std::string word;
         while (file >> word) {
             wordList.push_back(word);

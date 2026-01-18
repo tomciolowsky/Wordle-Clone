@@ -2,8 +2,6 @@ package com.wordle.gui;
 
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JButton;
@@ -19,7 +17,6 @@ public class KeyboardPanel extends GamePanel {
         this.listener = listener;
         this.setLayout(new GridLayout(3,1));
         
-
         String row1Keys = "QWERTYUIOP";
         String row2Keys = "ASDFGHJKL";
         String row3Keys = "*ZXCVBNM#"; // *=ENTER, #=BACK
@@ -29,7 +26,6 @@ public class KeyboardPanel extends GamePanel {
         this.add(createRowPanel(row3Keys));
     }
 
-    // Helper method to create 3 "SubPanels"
     private JPanel createRowPanel(String keys){
         JPanel panel = new JPanel();
         panel.setLayout(new FlowLayout());
@@ -41,44 +37,32 @@ public class KeyboardPanel extends GamePanel {
                 keyMap.put(letter,button);
             }
         }
-        panel.setBackground(MyColor.WORDLE_WHITE);
+        panel.setBackground(GameColor.WHITE.getColor());
         return panel;
     }
 
-    // Helper method to create a Button object
     private JButton createButton(char letter){
         JButton button;
         switch (letter) {
             case '*': // ENTER
                 button = new JButton("ENTER");
-                button.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e){
-                        listener.onEnterClicked();
-                    }
-                });
+                button.addActionListener(e -> listener.onEnterClicked());
                 break;
 
             case '#': // BACK
-                button = new JButton("⌫");
-                button.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e){
-                        listener.onBackspaceClicked();
-                    }
-                });
+                button = new JButton("\u2190");
+                button.addActionListener(e -> listener.onBackspaceClicked());
                 break;
         
             default:
                 button = new JButton(String.valueOf(letter));
-                button.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e){
-                        listener.onKeyClicked(letter);
-                    }
-                });
+                button.addActionListener(e -> listener.onKeyClicked(letter));
                 break;
         }
-        button.setBackground(MyColor.WORDLE_LIGHTGRAY);
-        button.setForeground(MyColor.WORDLE_BLACK);
-        button.setFocusPainted(false);
+        this.applyCommonStyle(button);
+
+        button.setBackground(GameColor.LIGHT_GRAY.getColor());
+        button.setForeground(GameColor.BLACK.getColor());
         return button;
     }
 
@@ -90,9 +74,10 @@ public class KeyboardPanel extends GamePanel {
 
     public void setKeyColor(char key, java.awt.Color color){
         if (keyMap.containsKey(key)){
-            keyMap.get(key).setBackground(color);
-            keyMap.get(key).setForeground(MyColor.WORDLE_WHITE);
-            keyMap.get(key).setOpaque(true);
+            JButton btn = keyMap.get(key);
+            btn.setBackground(color);
+            btn.setForeground(GameColor.WHITE.getColor());
+            btn.setOpaque(true);
         }
     }
 
@@ -100,8 +85,8 @@ public class KeyboardPanel extends GamePanel {
     public void resetView(){
         for (JButton button : keyMap.values()){
             button.setEnabled(true);
-            button.setBackground(MyColor.WORDLE_LIGHTGRAY);
-            button.setForeground(MyColor.WORDLE_BLACK);
+            button.setBackground(GameColor.LIGHT_GRAY.getColor());
+            button.setForeground(GameColor.BLACK.getColor());
         }
     }
 }

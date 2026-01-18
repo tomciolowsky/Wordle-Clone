@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -21,44 +22,67 @@ public class MainWindow implements KeyboardListener {
     private GameBridge bridge;
 
     private StringBuilder currentGuess;
+    private String currentDictPath;
 
-    public MainWindow() {
+    public MainWindow(String dictPath) {
+
+        if (!validateDictionaryFile(dictPath)) {
+            System.err.println("Dictionary file not found: " + dictPath);
+            System.exit(1);
+        }
+
+        this.currentDictPath = dictPath;
         this.currentGuess = new StringBuilder();
         this.bridge = new GameBridge();
-        this.bridge.startGame();
+        this.bridge.startGame(this.currentDictPath);
 
         initializeWindow();
+    }
+
+    private boolean validateDictionaryFile(String path) {
+        File f = new File(path);
+        return f.exists() && !f.isDirectory();
     }
 
     public void initializeWindow(){
         frame = new JFrame();
         this.frame.setTitle("Wordle Clone");
-        this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        this.frame.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                shutdown();
+            }
+        });
+
         this.frame.setSize(windowWidth, windowHeight);
         this.frame.setLocationRelativeTo(null);
-        this.frame.setResizable(false);
+        // this.frame.setResizable(false);
         this.frame.setVisible(true);
         this.frame.setLayout(new BorderLayout());
 
-        this.board = new BoardPanel(MyColor.WORDLE_WHITE, true);
-        this.keyboard = new KeyboardPanel(MyColor.WORDLE_WHITE, true, this);
+        this.board = new BoardPanel(GameColor.WHITE.getColor(), true);
+        this.keyboard = new KeyboardPanel(GameColor.WHITE.getColor(), true, this);
 
         this.frame.add(board, BorderLayout.CENTER);
         this.frame.add(keyboard, BorderLayout.SOUTH);
     }
 
+    public void shutdown() {
+        System.out.println("Shutting down application...");
+        frame.dispose();
+        System.exit(0);
+    }
+
     public void resetGame(){
         // C++ side
-        bridge.startGame();
+        bridge.startGame(this.currentDictPath);
 
         // Java side
         board.resetView();
         keyboard.resetView();
         currentGuess.setLength(0);
-    }
-
-    public void ShowGameOverDialog(String message){
-        JOptionPane.showMessageDialog(frame, message);
     }
 
     @Override
@@ -108,8 +132,8 @@ public class MainWindow implements KeyboardListener {
             JOptionPane.showMessageDialog(frame, "Invalid Characters!");
             return;
         }
+        // ROW ANIMATION
         if (results[0]==-2) {
-            // ROW ANIMATION
             final int originalX = frame.getLocation().x;
             final int originalY = frame.getLocation().y;
 
@@ -138,26 +162,13 @@ public class MainWindow implements KeyboardListener {
         // REVEAL ANIMATION
         int row = board.getCurrentRowIndex();
         char[] letters = guessStr.toCharArray();
-        // board.updateRow(row, letters, results);
         board.animateRow(row, letters, results);
         for(int i=0; i<5; i++){
-            char c = letters[i];
-            int colorCode = results[i];
-
-            Color color;
-            switch (colorCode) {
-                case 1:
-                    color = MyColor.WORDLE_YELLOW;
-                    break;
-                case 2:
-                    color = MyColor.WORDLE_GREEN;
-                    break;
-                default:
-                    color = MyColor.WORDLE_DARKGRAY;
-                    break;
-            }
-            keyboard.setKeyColor(c, color);
-
+            Color c = GameColor.GREY.getColor();
+            if (results[i] == 1) c = GameColor.YELLOW.getColor();
+            if (results[i] == 2) c = GameColor.GREEN.getColor();
+            
+            keyboard.setKeyColor(letters[i], c);
         }
 
         boolean isWin = true;
@@ -168,12 +179,10 @@ public class MainWindow implements KeyboardListener {
         }
 
         if (isWin) {
-            ShowGameOverDialog("YOU WON!");
-            handleGameOver();
+            handleGameOver("YOU WON!");
         }
         else if (board.getCurrentRowIndex() >= 5) {
-            ShowGameOverDialog("GAME OVER!");
-            handleGameOver();
+            handleGameOver("GAME OVER!");
         }
         else{
             board.nextRow();
@@ -181,12 +190,11 @@ public class MainWindow implements KeyboardListener {
         }
     }
 
-    private void handleGameOver(){
-
+    private void handleGameOver(String msg){
         String stats = bridge.getStatistics();
         int option = JOptionPane.showConfirmDialog(
             frame,
-            stats + "\n\nDo you want to play again?",
+            msg + "\n\n" + stats + "\n\nDo you want to play again?",
             "Game Over",
             JOptionPane.YES_NO_OPTION
         );
@@ -195,7 +203,7 @@ public class MainWindow implements KeyboardListener {
             resetGame();
         }
         else{
-            System.exit(0);
+            shutdown();
         }
     }
 }
